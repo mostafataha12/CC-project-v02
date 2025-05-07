@@ -21,10 +21,15 @@ const ChatbotPage: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageCountRef = useRef(messages.length);
   
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom only when new messages are added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > lastMessageCountRef.current && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+    lastMessageCountRef.current = messages.length;
   }, [messages]);
 
   // Suggested questions
@@ -167,7 +172,7 @@ const ChatbotPage: React.FC = () => {
               {/* Chat Area */}
               <div className="flex-1 flex flex-col">
                 {/* Messages */}
-                <div className="flex-1 p-4 overflow-y-auto">
+                <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto">
                   {messages.map((message) => (
                     <div 
                       key={message.id} 
